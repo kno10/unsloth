@@ -92,14 +92,14 @@ def MistralAttention_fast_forward(
             V = V  .view(bsz, q_len, n_kv_heads,        1, head_dim)
             K = K.expand(bsz, q_len, n_kv_heads, n_groups, head_dim)
             V = V.expand(bsz, q_len, n_kv_heads, n_groups, head_dim)
-            if hidden_states.requires_grad:
-                # Xformers does not support backward, so we have to convert
-                # GQA to MQA by cloning K and V
-                K = K.reshape(bsz, q_len, n_heads, head_dim) # A copy will be made
-                V = V.reshape(bsz, q_len, n_heads, head_dim) # A copy will be made
-            else:
-                # Xformers does support the forward pass though
-                Q = Q.view(bsz, q_len, n_kv_heads, n_groups, head_dim)
+            # if hidden_states.requires_grad:
+            # Xformers does not support backward, so we have to convert
+            # GQA to MQA by cloning K and V
+            K = K.reshape(bsz, q_len, n_heads, head_dim) # A copy will be made
+            V = V.reshape(bsz, q_len, n_heads, head_dim) # A copy will be made
+            # else:
+            #     # Xformers does support the forward pass though
+            #     Q = Q.view(bsz, q_len, n_kv_heads, n_groups, head_dim)
         pass
 
         A = xformers_attention(Q, K, V, attn_bias = causal_mask)
